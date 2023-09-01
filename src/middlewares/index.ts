@@ -3,6 +3,27 @@ import { get, merge } from 'lodash';
 
 import { getUserBySessionToken } from '../db/users';
 
+export const isOwner = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const sessionToken = req.cookies['USER-AUTH'];
+        const existingUser = await getUserBySessionToken(sessionToken);
+        const deletedId = req.params.id;
+        if (!existingUser) {
+            return res.sendStatus(403);
+        }
+
+        if (existingUser.id == deletedId) {
+            next();
+        } else {
+            return res.sendStatus(403);
+        }
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+}
+
 export const isAuthenticated = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
 
