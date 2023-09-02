@@ -5,14 +5,13 @@ import { getUserBySessionToken } from '../db/users';
 
 export const isOwner = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-        const sessionToken = req.cookies['USER-AUTH'];
-        const existingUser = await getUserBySessionToken(sessionToken);
-        const deletedId = req.params.id;
-        if (!existingUser) {
+        const existingUserId = get(req, 'identity._id') as string;
+        const { id } = req.params;
+        if (!existingUserId) {
             return res.sendStatus(403);
         }
 
-        if (existingUser.id == deletedId) {
+        if (id == existingUserId) {
             next();
         } else {
             return res.sendStatus(403);
